@@ -5,6 +5,8 @@
         "iosfwd": "cpp",
         "vector": "cpp",
         "unordered_set": "cpp",
-        "stdexcept": "cpp"
+        "stdexcept": "cpp",
+        "map": "cpp",
+        "iostream": "cpp"
     }
 }

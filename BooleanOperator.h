@@ -8,21 +8,22 @@ class BooleanOperator
 public:
         virtual bool evaluate(bool a, bool b)
         {       
-                // when i make this not pure virtual, other derived classes won't have to override it, seeing only the Not operator does not need it. 
+                // everything except the Not operator will derive this. 
                 throw logic_error(getName() + " does not support binary evaluation.");
         }
 
         virtual bool nevaluate(bool a)
         {
-                // when i make this not pure virtual, other derived classes won't have to override it, seeing only the Not operator needs it. 
+                // only the Not operator will derive this. 
                 throw logic_error(getName() + " does not support unary evaluation.");
         }
+        // pure virtual function, each operator will derive from it.  
         virtual string explain() = 0;
         virtual string getName() = 0;
-        // destructor
+        // default destructor
         virtual ~BooleanOperator() = default;
 };
-
+// deriving each operator from base class boolean operator. 
 class AndOperator : public BooleanOperator
 {
 public:

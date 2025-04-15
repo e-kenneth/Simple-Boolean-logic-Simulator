@@ -9,6 +9,14 @@ using namespace std;
 #include <cctype>
 #include <map>
 // This function "tokenizes" the input and seperate them into keywords, which then can be matched with my list of keywords. 
+
+// how it works:
+// the first if pushes every word into vector token, seperated by a space.
+// When it encounters parantheses: 
+// If a word was built before '(', push it first 
+// line 32 pushes '(' or ')' as seperate tokens
+// Example: "(A)" --> '(', 'A', ')'.
+// the last if handles edge cases, for when the last word might not be followed by a space. 
 vector<string> tokenize(const string& input) {
     vector<string> tokens;
     string token;
@@ -56,7 +64,6 @@ int main()
     cout<<"Input: "<<input<<endl;
 
     // tokenizing input
-
     vector<string> tokens = tokenize(input);
     vector<string> foundKeywords;
     for (const string& token : tokens) {
@@ -64,7 +71,6 @@ int main()
             foundKeywords.push_back(token);
         }
     }
-
     cout<<"Operators detected and explained: "<<endl;
     for (const string& op : foundKeywords)
     {

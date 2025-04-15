@@ -59,6 +59,3 @@ string XorOperator::explain(){
 string XorOperator::getName(){
     return "XOR";
 }
-// BooleanOperator::~BooleanOperator() {
-
-// }

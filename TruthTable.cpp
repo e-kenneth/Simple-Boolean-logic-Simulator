@@ -15,7 +15,7 @@ vector<vector<bool>> TruthTable::generateInputs()
     return inputs;
 }
 
-string TruthTable::generateIntermediateName(const string &op, const string &a, const string &b)
+string TruthTable::generateIntermediateName(const string op, const string a, const string b)
 {
     if (op == "NOT")
         return op + " " + a;
@@ -27,52 +27,83 @@ TruthTable::TruthTable(const vector<string> &postfixExpr, const map<string, Bool
 
 void TruthTable::evaluate()
 {
+    // Cleaning up previous data
     tableRows.clear();
     intermediateCols.clear();
     vector<vector<bool>> inputs = generateInputs();
 
+    // for each A, B, C
     for (const auto &row : inputs)
     {
         bool A = row[0], B = row[1], C = row[2];
+        // store current variable values
         map<string, bool> vars = {{"A", A}, {"B", B}, {"C", C}};
+        // this is to simulate postfix evaluation
         vector<string> stack;
+        // this is to store results after each operation is done eg. after A OR B is done, it will be stored here
         map<string, bool> tempResults;
 
+        // Postfix evaluation
+        // process each token in order, stored in postfix vector
         for (const string &token : postfix)
         {
+            // If token is the variable, push to stack
             if (token == "A" || token == "B" || token == "C")
             {
                 stack.push_back(token);
             }
+            // unless, if its the not operator, get the last value from stack
+            // eg C, check if it is a previously computed variable
             else if (token == "NOT")
             {
-                string a = stack.back();
+                string a = stack.back(); // get operand
                 stack.pop_back();
-                bool val = vars.count(a) ? vars[a] : tempResults[a];
+                bool val = vars.count(a) ? vars[a] : tempResults[a]; // value of A or previous result
+                // evaluating not operation
                 bool result = operatorMap.at("NOT")->nevaluate(val);
+                // generating label --> "NOT varname"
                 string name = generateIntermediateName("NOT", a);
                 stack.push_back(name);
-                tempResults[name] = result;
+                tempResults[name] = result; // tempresult holds these labels
                 if (find(intermediateCols.begin(), intermediateCols.end(), name) == intermediateCols.end())
                     intermediateCols.push_back(name);
             }
             else
             {
+                // pop 2 values
                 string b = stack.back();
                 stack.pop_back();
                 string a = stack.back();
                 stack.pop_back();
-                bool valA = vars.count(a) ? vars[a] : tempResults[a];
-                bool valB = vars.count(b) ? vars[b] : tempResults[b];
+                bool valA, valB;
+                // evaluate a and b
+                if (vars.count(a))
+                {
+                     valA = vars[a];
+                }
+                else
+                {
+                     valA = tempResults[a];
+                }
+                if (vars.count(b))
+                {
+                     valB = vars[b];
+                }
+                else
+                {
+                     valB = tempResults[b];
+                }
                 bool result = operatorMap.at(token)->evaluate(valA, valB);
+                // then label it
                 string name = generateIntermediateName(token, a, b);
                 stack.push_back(name);
                 tempResults[name] = result;
+                // this is if the intermediate result isn't alr on the list
                 if (find(intermediateCols.begin(), intermediateCols.end(), name) == intermediateCols.end())
                     intermediateCols.push_back(name);
             }
         }
-
+        // after a row is evaluated, push them to the vector tableRows
         vector<bool> rowData = {A, B, C};
         for (const string &col : intermediateCols)
         {
@@ -85,86 +116,28 @@ void TruthTable::evaluate()
 void TruthTable::printTable()
 {
     cout << "| A | B | C ";
-    for (const string &col : intermediateCols)
+    for (const string col : intermediateCols)
     {
         cout << "| " << col << " ";
     }
     cout << "|\n";
 
     cout << "|---|---|---";
-    for (const string &col : intermediateCols)
+    for (const string col : intermediateCols)
     {
         cout << "|" << string(col.length() + 2, '-');
     }
     cout << "|\n";
-
-    for (const auto &row : tableRows)
+    // use pass by ref for efficiency
+    for (const auto row : tableRows)
     {
         cout << "| " << row[0] << " | " << row[1] << " | " << row[2];
-        for (size_t i = 3; i < row.size(); i++)
+        for (int i = 3; i < row.size(); i++)
         {
-            cout << " | " << setw(intermediateCols[i - 3].length()) << row[i] << " ";
+            cout << " | "<< row[i] << " ";
         }
         cout << "|\n";
     }
-}
-
-vector<string> TruthTable::infixToPostfix(const vector<string> &tokens)
-{
-    vector<string> output;
-    vector<string> opStack;
-
-    map<string, int> precedence = {
-        {"NOT", 3}, {"AND", 2}, {"NAND", 2}, {"OR", 1}, {"NOR", 1}, {"XOR", 1}};
-
-    unordered_set<string> operators = {"NOT", "AND", "OR", "NAND", "NOR", "XOR"};
-    unordered_set<string> rightAssociative = {"NOT"};
-
-    for (const string &token : tokens)
-    {
-        if (token == "(")
-        {
-            opStack.push_back(token);
-        }
-        else if (token == ")")
-        {
-            while (!opStack.empty() && opStack.back() != "(")
-            {
-                output.push_back(opStack.back());
-                opStack.pop_back();
-            }
-            if (!opStack.empty())
-                opStack.pop_back(); // pop "("
-        }
-        else if (operators.count(token))
-        {
-            while (!opStack.empty() && operators.count(opStack.back()))
-            {
-                string top = opStack.back();
-                if ((rightAssociative.count(token) == 0 && precedence[token] <= precedence[top]) ||
-                    (rightAssociative.count(token) == 1 && precedence[token] < precedence[top]))
-                {
-                    output.push_back(top);
-                    opStack.pop_back();
-                }
-                else
-                    break;
-            }
-            opStack.push_back(token);
-        }
-        else
-        {
-            output.push_back(token); // Variable
-        }
-    }
-
-    while (!opStack.empty())
-    {
-        output.push_back(opStack.back());
-        opStack.pop_back();
-    }
-
-    return output;
 }
 
 void TruthTable::saveToFile(const string &filename, const string &originalExpression, const vector<string> &detectedOperators)

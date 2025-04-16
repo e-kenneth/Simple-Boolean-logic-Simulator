@@ -17,13 +17,12 @@ private:
     map<string, BooleanOperator*> operatorMap;
     // vector function to generate all combinations (A = 0, B = 0, C = 1) etc
     vector<vector<bool>> generateInputs();
-    map<string, bool> createVarMap(int rowIndex);
 
     vector<string> intermediateCols;
     vector<vector<bool>> tableRows;
 
-    int tempCounter = 1;
-    string generateIntermediateName(const string &op, const string &a, const string &b = "");
+    // int tempCounter = 1;
+    string generateIntermediateName(const string op, const string a, const string b = "");
 
 public:
     // constructor
@@ -31,6 +30,6 @@ public:
     void saveToFile(const string& filename, const string& originalExpression, const vector<string>& detectedOperators);
     void evaluate();
     void printTable();
-    static vector<string> infixToPostfix(const vector<string>& tokens);
+    static vector<string> infixToPostfix(const vector<string> tokens);
 };
 #endif

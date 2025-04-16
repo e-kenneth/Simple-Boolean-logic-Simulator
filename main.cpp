@@ -8,9 +8,64 @@
 #include <cctype>
 #include <map>
 #include <algorithm>
-
 using namespace std;
+vector<string> infixToPostfix(const vector<string> tokens)
+{
+    vector<string> output;
+    vector<string> opStack;
 
+    map<string, int> precedence = {
+        {"NOT", 3}, {"AND", 2}, {"NAND", 2}, {"OR", 1}, {"NOR", 1}, {"XOR", 1}};
+
+    unordered_set<string> operators = {"NOT", "AND", "OR", "NAND", "NOR", "XOR"};
+    unordered_set<string> rightAssociative = {"NOT"};
+
+    for (const string &token : tokens)
+    {
+        if (token == "(")
+        {
+            opStack.push_back(token);
+        }
+        else if (token == ")")
+        {
+            while (!opStack.empty() && opStack.back() != "(")
+            {
+                output.push_back(opStack.back());
+                opStack.pop_back();
+            }
+            if (!opStack.empty())
+                opStack.pop_back(); // pop "("
+        }
+        else if (operators.count(token))
+        {
+            while (!opStack.empty() && operators.count(opStack.back()))
+            {
+                string top = opStack.back();
+                if ((rightAssociative.count(token) == 0 && precedence[token] <= precedence[top]) ||
+                    (rightAssociative.count(token) == 1 && precedence[token] < precedence[top]))
+                {
+                    output.push_back(top);
+                    opStack.pop_back();
+                }
+                else
+                    break;
+            }
+            opStack.push_back(token);
+        }
+        else
+        {
+            output.push_back(token); // Variable
+        }
+    }
+
+    while (!opStack.empty())
+    {
+        output.push_back(opStack.back());
+        opStack.pop_back();
+    }
+
+    return output;
+}
 vector<string> tokenize(const string &input)
 {
     vector<string> tokens;
@@ -63,7 +118,7 @@ int main()
     cout << "Input: " << input << endl;
 
     vector<string> tokens = tokenize(input);
-    vector<string> postfix = TruthTable::infixToPostfix(tokens);
+    vector<string> postfix = infixToPostfix(tokens);
 
     cout << "Postfix Expression: ";
     for (const string &tok : postfix)

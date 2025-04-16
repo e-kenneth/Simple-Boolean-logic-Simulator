@@ -63,8 +63,3 @@ class XorOperator : public BooleanOperator
         string explain() override;
         string getName() override;
 };
-
-// BooleanOperator::~BooleanOperator()
-// {
-//         // Nothing to clean up (unless needed)
-// }

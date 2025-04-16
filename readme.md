@@ -1,4 +1,4 @@
-Research :
+Research and resources: 
 
 Boolean Vector : https://en.cppreference.com/w/cpp/container/vector_bool
 

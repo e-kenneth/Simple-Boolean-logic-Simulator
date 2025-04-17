@@ -7,6 +7,9 @@
         "unordered_set": "cpp",
         "stdexcept": "cpp",
         "map": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "ostream": "cpp",
+        "fstream": "cpp",
+        "list": "cpp"
     }
 }

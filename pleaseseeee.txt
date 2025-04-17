@@ -1,0 +1,5 @@
+*** Boolean Expression Truth Table ***
+
+Original Expression:
+A AND B OR NOT C
+

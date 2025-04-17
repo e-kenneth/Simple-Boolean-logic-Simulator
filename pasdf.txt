@@ -1,0 +1,21 @@
+*** Boolean Expression Truth Table ***
+
+Original Expression:
+A AND B OR NOT C
+
+Operators Detected and Explained:
+- AND: The AND operator returns true Only if both a and b are true
+- OR: The OR operator returns true if a or b is true
+- NOT: The NOT operator inverts the variable's value, from true to false and vice versa
+
+Truth Table:
+| A | B | C | (A AND B) | NOT C | ((A AND B) OR NOT C) |
+|---|---|---|-----------|-------|----------------------|
+| 0 | 0 | 0 | 0  | 1  | 1 |
+| 0 | 0 | 1 | 0  | 0  | 0 |
+| 0 | 1 | 0 | 0  | 1  | 1 |
+| 0 | 1 | 1 | 0  | 0  | 0 |
+| 1 | 0 | 0 | 0  | 1  | 1 |
+| 1 | 0 | 1 | 0  | 0  | 0 |
+| 1 | 1 | 0 | 1  | 1  | 1 |
+| 1 | 1 | 1 | 1  | 0  | 1 |

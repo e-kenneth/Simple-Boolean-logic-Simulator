@@ -1,8 +1,10 @@
 #include "TruthTable.h"
+#include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <unordered_set>
-#include <fstream>
+#include <iomanip>
+
 using namespace std;
 
 vector<vector<bool>> TruthTable::generateInputs()
@@ -22,8 +24,7 @@ string TruthTable::generateIntermediateName(const string op, const string a, con
     return "(" + a + " " + op + " " + b + ")";
 }
 
-TruthTable::TruthTable(const vector<string> &postfixExpr, const map<string, BooleanOperator *> &opMap)
-    : postfix(postfixExpr), operatorMap(opMap) {}
+TruthTable::TruthTable(const vector<string> &postfixExpr, const map<string, BooleanOperator *> &opMap) : postfix(postfixExpr), operatorMap(opMap) {}
 
 void TruthTable::evaluate()
 {
@@ -58,7 +59,16 @@ void TruthTable::evaluate()
             {
                 string a = stack.back(); // get operand
                 stack.pop_back();
-                bool val = vars.count(a) ? vars[a] : tempResults[a]; // value of A or previous result
+                bool val;
+                if (vars.count(a))
+                {
+                    val = vars[a];
+                }
+                else
+                {
+                    val = tempResults[a];
+                }
+                // value of A or previous result
                 // evaluating not operation
                 bool result = operatorMap.at("NOT")->nevaluate(val);
                 // generating label --> "NOT varname"
@@ -79,19 +89,19 @@ void TruthTable::evaluate()
                 // evaluate a and b
                 if (vars.count(a))
                 {
-                     valA = vars[a];
+                    valA = vars[a];
                 }
                 else
                 {
-                     valA = tempResults[a];
+                    valA = tempResults[a];
                 }
                 if (vars.count(b))
                 {
-                     valB = vars[b];
+                    valB = vars[b];
                 }
                 else
                 {
-                     valB = tempResults[b];
+                    valB = tempResults[b];
                 }
                 bool result = operatorMap.at(token)->evaluate(valA, valB);
                 // then label it
@@ -111,6 +121,7 @@ void TruthTable::evaluate()
         }
         tableRows.push_back(rowData);
     }
+    cout << "[DEBUG] Finished evaluating. tableRows = " << tableRows.size() << endl;
 }
 
 void TruthTable::printTable()
@@ -134,7 +145,8 @@ void TruthTable::printTable()
         cout << "| " << row[0] << " | " << row[1] << " | " << row[2];
         for (int i = 3; i < row.size(); i++)
         {
-            cout << " | "<< row[i] << " ";
+            // cout << " | " << row[i] << " ";
+            cout << " | " << setw(intermediateCols[i - 3].length()) << row[i] << " ";
         }
         cout << "|\n";
     }
@@ -142,40 +154,64 @@ void TruthTable::printTable()
 
 void TruthTable::saveToFile(const string &filename, const string &originalExpression, const vector<string> &detectedOperators)
 {
-    ofstream out(filename);
-    if (!out.is_open())
+    std::ofstream file(filename);
+    if (!file.is_open())
     {
-        cerr << "Error: Could not open file: " << filename << endl;
+        std::cerr << "Error: Cannot open file: " << filename << "\n";
         return;
     }
+    // Expression & Operators
+    file << "*** Boolean Expression Truth Table ***\n\n";
+    file.flush();
+    file << "Original Expression:\n"
+         << originalExpression << "\n\n";
+    file.flush();
 
-    out << "*** BOOLEAN EXPRESSION TRUTH TABLE ***\n\n";
-    out << "Expression: " << originalExpression << "\n\n";
+    file << "Operators Detected and Explained:\n";
 
-    out << "Operators Used:\n";
     for (const string &op : detectedOperators)
     {
-        out << "- " << op << ": " << operatorMap.at(op)->explain() << "\n";
+        // cout << "[DEBUG] Writing operator: " << op << endl;
+        file << "- " << op << ": " << operatorMap.at(op)->explain() << "\n";
+        file.flush();
     }
-    out << "\nTruth Table:\n";
-    out << "| A | B | C ";
-    for (const string &col : intermediateCols)
-        out << "| " << col << " ";
-    out << "|\n";
 
-    out << "|---|---|---";
-    for (const string &col : intermediateCols)
-        out << "|" << string(col.length() + 2, '-');
-    out << "|\n";
+    file << "\nTruth Table:\n";
+    file.flush();
 
+    file << "| A | B | C ";
+    file.flush();
+    for (const string &col : intermediateCols)
+        file << "| " << col << " ";
+    file.flush();
+
+    file << "|\n";
+    file.flush();
+
+    file << "|---|---|---";
+    file.flush();
+
+    for (const string &col : intermediateCols)
+        file << "|" << string(col.length() + 2, '-');
+    file.flush();
+
+    file << "|\n";
+    file.flush();
+
+    // Write data
     for (const auto &row : tableRows)
     {
-        out << "| " << row[0] << " | " << row[1] << " | " << row[2];
-        for (size_t i = 3; i < row.size(); i++)
-            out << " | " << setw(intermediateCols[i - 3].length()) << row[i] << " ";
-        out << "|\n";
-    }
+        file << "| " << row[0] << " | " << row[1] << " | " << row[2];
+        file.flush();
 
-    out.close();
-    cout << "\nTruth table saved to '" << filename << "' successfully!\n";
+        for (int i = 3; i < row.size(); ++i)
+            file << " | " << row[i] << " ";
+        file.flush();
+
+        file << "|\n";
+    }
+    file.flush();
+    file.close();
+
+    std::cout << "✅ File '" << filename << "' written successfully.\n";
 }

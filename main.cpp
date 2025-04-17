@@ -1,3 +1,4 @@
+#include <fstream>
 #include "BooleanOperator.h"
 #include "TruthTable.h"
 #include <iostream>
@@ -141,13 +142,10 @@ int main()
     }
 
     TruthTable tt(postfix, operatorMap);
+    cout << "[DEBUG] calling evaluate()\n";
     tt.evaluate();
+    cout << "[DEBUG] evaluate() completed\n";
     tt.printTable();
-
-    for (auto &pair : operatorMap)
-    {
-        delete pair.second;
-    }
 
     cout << "\nWould you like to save the truth table to a file? (Y/N): ";
     char choice;
@@ -160,19 +158,32 @@ int main()
         string filename;
         getline(cin, filename);
 
-        // build list of unique operators
         unordered_set<string> seen;
         vector<string> usedOps;
+
         for (const string &tok : tokens)
         {
-            if (keywords.count(tok) && seen.count(tok) == 0)
+            // check if each operators are being stored
+            cout << tok << endl;
+            if (keywords.count(tok) > 0 && seen.count(tok) == 0)
             {
                 usedOps.push_back(tok);
                 seen.insert(tok);
             }
         }
 
+        for (const string &testtokens : usedOps)
+        {
+            cout << testtokens << endl;
+        }
+
         tt.saveToFile(filename, input, usedOps);
     }
-    return 0;
+    // clear operatormap contents
+    for (auto &pair : operatorMap)
+    {
+        delete pair.second;
+    }
+
+    // testSimpleFileWrite();
 }

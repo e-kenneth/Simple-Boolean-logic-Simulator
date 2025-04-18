@@ -142,9 +142,9 @@ int main()
     }
 
     TruthTable tt(postfix, operatorMap);
-    cout << "[DEBUG] calling evaluate()\n";
+    cout << "call evaluate\n";
     tt.evaluate();
-    cout << "[DEBUG] evaluate() completed\n";
+    cout << "test"<<endl;
     tt.printTable();
 
     cout << "\nWould you like to save the truth table to a file? (Y/N): ";
@@ -171,11 +171,11 @@ int main()
                 seen.insert(tok);
             }
         }
-
-        for (const string &testtokens : usedOps)
-        {
-            cout << testtokens << endl;
-        }
+        // debug usedOps
+        // for (const string &testtokens : usedOps)
+        // {
+        //     cout << testtokens << endl;
+        // }
 
         tt.saveToFile(filename, input, usedOps);
     }

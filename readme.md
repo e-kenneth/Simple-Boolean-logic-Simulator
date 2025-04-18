@@ -13,3 +13,7 @@ https://www.andrew.cmu.edu/course/15-200/s06/applications/ln/junk.html#:~:text=T
 evaluating postfix expression: 
 https://www.geeksforgeeks.org/evaluation-of-postfix-expression/?ref=rp
 
+build n run (using g++): 
+1.g++ main.cpp BooleanOperator.cpp TruthTable.cpp -o BooleanSimulator
+2. ./BooleanSimulator
+

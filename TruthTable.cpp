@@ -75,6 +75,7 @@ void TruthTable::evaluate()
                 string name = generateIntermediateName("NOT", a);
                 stack.push_back(name);
                 tempResults[name] = result; // tempresult holds these labels
+                // very useful, ensures that each intermediate operation is labeled and kept in a vector for column printing. 
                 if (find(intermediateCols.begin(), intermediateCols.end(), name) == intermediateCols.end())
                     intermediateCols.push_back(name);
             }
@@ -121,7 +122,7 @@ void TruthTable::evaluate()
         }
         tableRows.push_back(rowData);
     }
-    cout << "[DEBUG] Finished evaluating. tableRows = " << tableRows.size() << endl;
+    cout << "tableRows = " << tableRows.size() << endl;
 }
 
 void TruthTable::printTable()
@@ -155,11 +156,6 @@ void TruthTable::printTable()
 void TruthTable::saveToFile(const string &filename, const string &originalExpression, const vector<string> &detectedOperators)
 {
     std::ofstream file(filename);
-    if (!file.is_open())
-    {
-        std::cerr << "Error: Cannot open file: " << filename << "\n";
-        return;
-    }
     // Expression & Operators
     file << "*** Boolean Expression Truth Table ***\n\n";
     file.flush();
@@ -213,5 +209,5 @@ void TruthTable::saveToFile(const string &filename, const string &originalExpres
     file.flush();
     file.close();
 
-    std::cout << "✅ File '" << filename << "' written successfully.\n";
+    std::cout << " File '" << filename << "' written successfully.\n";
 }

@@ -16,4 +16,5 @@ https://www.geeksforgeeks.org/evaluation-of-postfix-expression/?ref=rp
 build n run (using g++): 
 1.g++ main.cpp BooleanOperator.cpp TruthTable.cpp -o BooleanSimulator
 2. ./BooleanSimulator
+3. Enter expression, please use all capital letters.
 
